@@ -20,19 +20,25 @@ project "Veridox"
 
     files
     {
-        "%{prj.location}\\include\\**.h",
-        "%{prj.location}\\source\\**.cpp"
+        "%{prj.location}\\Public\\include\\**.h",
+        "%{prj.location}\\Public\\source\\**.cpp",
+        "%{prj.location}\\Private\\include\\**.h",
+        "%{prj.location}\\Private\\source\\**.cpp"
     }
 
     includedirs
     {
-        "%{prj.location}\\include\\",
+        "%{prj.location}\\Public\\include\\",
+        "%{prj.location}\\Private\\include\\",
         "%{wks.location}\\Dependencies\\include\\"
     }
 
     libdirs "%{wks.location}\\Dependencies\\lib"
 
-    postbuildcommands "xcopy /Y /q \"%{prj.location}\\include\\*.h\" \"$(SolutionDir)Dependencies\\include\\Veridox\""
+    postbuildcommands
+    {
+        "xcopy /Y /q \"%{prj.location}Public\\include\\*.h\" \"$(SolutionDir)Dependencies\\include\\Veridox\\\""
+    }
 
     filter "platforms:x86"
         architecture "x32"
@@ -47,18 +53,25 @@ project "Veridox"
 
     filter "configurations:Debug"
         defines "_DEBUG"
+        runtime "Debug"
+        
+    filter "configurations:Release"
+        runtime "Release"
 
 project "Veridox-Sample"
     location "Veridox-Sample"
     filename "Veridox-Sample"
 
     kind "ConsoleApp"
+    staticruntime "On"
 
     language "C++"
     cppdialect "C++20"
 
     targetdir "Builds\\%{prj.name}"
     objdir "Intermediate\\%{prj.name}"
+
+    dependson "Veridox"
 
     files
     {
@@ -76,6 +89,8 @@ project "Veridox-Sample"
 
     links "Veridox.lib"
 
+    defines "_CONSOLE"
+
     filter "platforms:x86"
         architecture "x32"
         defines "WIN32"
@@ -91,3 +106,7 @@ project "Veridox-Sample"
 
     filter "configurations:Debug"
         defines "_DEBUG"
+        runtime "Debug"
+        
+    filter "configurations:Release"
+        runtime "Release"

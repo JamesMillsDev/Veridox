@@ -1,0 +1,137 @@
+#include "Veridox.h"
+
+#include <format>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+
+#include "ExcelHelper.h"
+
+using std::fstream;
+
+TestInitFnc Veridox::m_init;
+TestShutdownFnc Veridox::m_shutdown;
+
+void Veridox::RegisterTest(Test fnc)
+{
+	m_tests.emplace_back(fnc);
+}
+
+void Veridox::SetTestInit(TestInitFnc fnc)
+{
+	m_init = fnc;
+}
+
+void Veridox::SetTestShutdown(TestShutdownFnc fnc)
+{
+	m_shutdown = fnc;
+}
+
+void Veridox::Run()
+{
+	if (m_init != nullptr)
+	{
+		m_init();
+	}
+
+	int passed = 0;
+	string reason;
+
+	time_t t = std::time(nullptr);
+	tm dateTime;
+	localtime_s(&dateTime, &t);
+
+	string header;
+	MakeHeader(header, false, 0, 0, &dateTime);
+
+	std::cout << header;
+
+	stringstream stream;
+
+	ExcelHelper::Init();
+
+	for (int i = 0; i < static_cast<int>(m_tests.size()); ++i)
+	{
+		auto& [name, test] = m_tests[i];
+
+		bool succeeded = test(reason);
+
+		TestResult state =
+		{
+			name, i + 1, succeeded, reason
+		};
+
+		ExcelHelper::AddResultToBook(state);
+
+		if (succeeded)
+		{
+			passed++;
+		}
+	}
+
+	std::cout << std::format("\n\x1B[33m{} out of {} tests passed!\x1B[37m\n", passed, m_tests.size());
+
+	if (m_shutdown != nullptr)
+	{
+		m_shutdown(passed, m_tests.size());
+	}
+
+	ExcelHelper::Shutdown();
+}
+
+void Veridox::OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime)
+{
+	fstream stream;
+
+	stream.open("tests.log", std::ios::out | std::ios::app);
+
+	if (stream.is_open())
+	{
+		string header;
+		MakeHeader(header, true, passCount, testCount, dateTime);
+
+		stream << header << testLines.str();
+	}
+
+	stream.close();
+}
+
+void Veridox::MakeHeader(string& header, bool isFileMode, int passCount, size_t testCount, tm* dateTime)
+{
+	stringstream stream;
+
+	if (!isFileMode)
+	{
+		stream << "\x1B[36m";
+	}
+
+	stream << "====================================================\n";
+	stream << "Date: " << std::put_time(dateTime, "%d/%m/%Y");
+	stream << " Time: " << std::put_time(dateTime, "%H:%M:%S");
+
+	if (isFileMode)
+	{
+		float successRate = static_cast<float>(passCount) / static_cast<float>(testCount);
+		successRate *= 100.f;
+
+		stream << " Successful: ";
+		stream << std::setprecision(2) << std::fixed << successRate << "%";
+	}
+
+	stream << "\n====================================================\n";
+
+	header = stream.str();
+}
+
+//void Veridox::OutputTest(ostream& stream, bool isFileStream, TestResult& state)
+//{
+//	stream << std::format(
+//		"{}Test {:0>3} {}{:12} {:18}{} {}\n",
+//		(isFileStream ? "" : "\x1B[33m"),
+//		state.id, (isFileStream ? "" : "\x1B[36m"),
+//		state.name, (isFileStream ? state.success ? "Successful" : "Failed" : state.success ? "\x1B[32mSuccessful" : "\x1B[31mFailed"),
+//		(isFileStream ? "" : "\x1B[37m"),
+//		(state.success ? "" : string("Reason: ") + state.failReason));
+//}
+
+MAIN

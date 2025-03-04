@@ -5,6 +5,9 @@
 *.sln
 *.filters
 
+Depedencies/include/Veridox/
+Depedencies/Veridox.*
+
 ### C++ ###
 # Prerequisites
 *.d

@@ -5,12 +5,12 @@
 *.sln
 *.filters
 
-Depedencies/include/Veridox/
-Depedencies/Veridox.*
+Dependencies/include/Veridox/
 
 ### C++ ###
 # Prerequisites
 *.d
+*.idb
 
 # Compiled Object files
 *.slo

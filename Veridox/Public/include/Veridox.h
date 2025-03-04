@@ -14,47 +14,50 @@ typedef bool(*TestFnc)(string& reason);
 typedef void(*TestInitFnc)();
 typedef void(*TestShutdownFnc)(int passCount, size_t maxTestCount);
 
-class Veridox
+namespace Veridox
 {
-	friend class ExcelHelper;
-
-private:
-	struct Test
+	class Veridox
 	{
+		friend class ExcelHelper;
+
+	private:
+		struct Test
+		{
+		public:
+			const char* name;
+			TestFnc test;
+
+		};
+
+		struct TestResult
+		{
+		public:
+			const char* name;
+			int id;
+			bool success;
+			string failReason;
+
+		};
+
 	public:
-		const char* name;
-		TestFnc test;
+		static void RegisterTest(Test fnc);
+		static void SetTestInit(TestInitFnc fnc);
+		static void SetTestShutdown(TestShutdownFnc fnc);
+		static void Run();
+
+	private:
+		static vector<Test> m_tests;
+		static TestInitFnc m_init;
+		static TestShutdownFnc m_shutdown;
+
+	private:
+		static void OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime);
+		static void MakeHeader(string& header, bool isFileMode, int passCount, size_t testCount, tm* dateTime);
 
 	};
 
-	struct TestResult
-	{
-	public:
-		const char* name;
-		int id;
-		bool success;
-		string failReason;
-
-	};
-
-public:
-	static void RegisterTest(Test fnc);
-	static void SetTestInit(TestInitFnc fnc);
-	static void SetTestShutdown(TestShutdownFnc fnc);
-	static void Run();
-
-private:
-	static vector<Test> m_tests;
-	static TestInitFnc m_init;
-	static TestShutdownFnc m_shutdown;
-
-private:
-	static void OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime);
-	static void MakeHeader(string& header, bool isFileMode, int passCount, size_t testCount, tm* dateTime);
-
-};
-
-inline vector<Veridox::Test> Veridox::m_tests;
+	inline vector<Veridox::Test> Veridox::m_tests;
+}
 
 #pragma region Macros
 #define TEST(FUNC_NAME) \
@@ -90,13 +93,13 @@ inline vector<Veridox::Test> Veridox::m_tests;
 #define MAIN \
 	int main() { \
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);\
-		Veridox::Run();\
+		Veridox::Veridox::Run();\
 		return 0; \
 	} 
 #else
 #define MAIN \
 	int main() { \
-		Veridox::Run();\
+		Veridox::Veridox::Run();\
 		return 0; \
 	}
 #endif  

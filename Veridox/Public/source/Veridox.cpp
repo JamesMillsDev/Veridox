@@ -9,118 +9,121 @@
 
 using std::fstream;
 
-TestInitFnc Veridox::m_init;
-TestShutdownFnc Veridox::m_shutdown;
-
-void Veridox::RegisterTest(Test fnc)
+namespace Veridox
 {
-	m_tests.emplace_back(fnc);
-}
+	TestInitFnc Veridox::m_init;
+	TestShutdownFnc Veridox::m_shutdown;
 
-void Veridox::SetTestInit(TestInitFnc fnc)
-{
-	m_init = fnc;
-}
-
-void Veridox::SetTestShutdown(TestShutdownFnc fnc)
-{
-	m_shutdown = fnc;
-}
-
-void Veridox::Run()
-{
-	if (m_init != nullptr)
+	void Veridox::RegisterTest(Test fnc)
 	{
-		m_init();
+		m_tests.emplace_back(fnc);
 	}
 
-	int passed = 0;
-	string reason;
-
-	time_t t = std::time(nullptr);
-	tm dateTime;
-	localtime_s(&dateTime, &t);
-
-	string header;
-	MakeHeader(header, false, 0, 0, &dateTime);
-
-	std::cout << header;
-
-	stringstream stream;
-
-	ExcelHelper::Init();
-
-	for (int i = 0; i < static_cast<int>(m_tests.size()); ++i)
+	void Veridox::SetTestInit(TestInitFnc fnc)
 	{
-		auto& [name, test] = m_tests[i];
+		m_init = fnc;
+	}
 
-		bool succeeded = test(reason);
+	void Veridox::SetTestShutdown(TestShutdownFnc fnc)
+	{
+		m_shutdown = fnc;
+	}
 
-		TestResult state =
+	void Veridox::Run()
+	{
+		if (m_init != nullptr)
 		{
-			name, i + 1, succeeded, reason
-		};
-
-		ExcelHelper::AddResultToBook(state);
-
-		if (succeeded)
-		{
-			passed++;
+			m_init();
 		}
-	}
 
-	std::cout << std::format("\n\x1B[33m{} out of {} tests passed!\x1B[37m\n", passed, m_tests.size());
+		int passed = 0;
+		string reason;
 
-	if (m_shutdown != nullptr)
-	{
-		m_shutdown(passed, m_tests.size());
-	}
+		time_t t = std::time(nullptr);
+		tm dateTime;
+		localtime_s(&dateTime, &t);
 
-	ExcelHelper::Shutdown();
-}
-
-void Veridox::OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime)
-{
-	fstream stream;
-
-	stream.open("tests.log", std::ios::out | std::ios::app);
-
-	if (stream.is_open())
-	{
 		string header;
-		MakeHeader(header, true, passCount, testCount, dateTime);
+		MakeHeader(header, false, 0, 0, &dateTime);
 
-		stream << header << testLines.str();
+		std::cout << header;
+
+		stringstream stream;
+
+		ExcelHelper::Init();
+
+		for (int i = 0; i < static_cast<int>(m_tests.size()); ++i)
+		{
+			auto& [name, test] = m_tests[i];
+
+			bool succeeded = test(reason);
+
+			TestResult state =
+			{
+				name, i + 1, succeeded, reason
+			};
+
+			ExcelHelper::AddResultToBook(state);
+
+			if (succeeded)
+			{
+				passed++;
+			}
+		}
+
+		std::cout << std::format("\n\x1B[33m{} out of {} tests passed!\x1B[37m\n", passed, m_tests.size());
+
+		if (m_shutdown != nullptr)
+		{
+			m_shutdown(passed, m_tests.size());
+		}
+
+		ExcelHelper::Shutdown();
 	}
 
-	stream.close();
-}
-
-void Veridox::MakeHeader(string& header, bool isFileMode, int passCount, size_t testCount, tm* dateTime)
-{
-	stringstream stream;
-
-	if (!isFileMode)
+	void Veridox::OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime)
 	{
-		stream << "\x1B[36m";
+		fstream stream;
+
+		stream.open("tests.log", std::ios::out | std::ios::app);
+
+		if (stream.is_open())
+		{
+			string header;
+			MakeHeader(header, true, passCount, testCount, dateTime);
+
+			stream << header << testLines.str();
+		}
+
+		stream.close();
 	}
 
-	stream << "====================================================\n";
-	stream << "Date: " << std::put_time(dateTime, "%d/%m/%Y");
-	stream << " Time: " << std::put_time(dateTime, "%H:%M:%S");
-
-	if (isFileMode)
+	void Veridox::MakeHeader(string& header, bool isFileMode, int passCount, size_t testCount, tm* dateTime)
 	{
-		float successRate = static_cast<float>(passCount) / static_cast<float>(testCount);
-		successRate *= 100.f;
+		stringstream stream;
 
-		stream << " Successful: ";
-		stream << std::setprecision(2) << std::fixed << successRate << "%";
+		if (!isFileMode)
+		{
+			stream << "\x1B[36m";
+		}
+
+		stream << "====================================================\n";
+		stream << "Date: " << std::put_time(dateTime, "%d/%m/%Y");
+		stream << " Time: " << std::put_time(dateTime, "%H:%M:%S");
+
+		if (isFileMode)
+		{
+			float successRate = static_cast<float>(passCount) / static_cast<float>(testCount);
+			successRate *= 100.f;
+
+			stream << " Successful: ";
+			stream << std::setprecision(2) << std::fixed << successRate << "%";
+		}
+
+		stream << "\n====================================================\n";
+
+		header = stream.str();
 	}
-
-	stream << "\n====================================================\n";
-
-	header = stream.str();
 }
 
 //void Veridox::OutputTest(ostream& stream, bool isFileStream, TestResult& state)

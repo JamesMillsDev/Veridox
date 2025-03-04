@@ -13,72 +13,75 @@ using libxl::AlignV;
 using libxl::AlignV;
 using libxl::FillPattern;
 
-class ExcelHelper
+namespace Veridox
 {
-private:
-	struct Color
+	class ExcelHelper
 	{
+	private:
+		struct Color
+		{
+		public:
+			int r = 255;
+			int g = 255;
+			int b = 255;
+
+		};
+
+		struct ColumnInfo
+		{
+		public:
+			const wchar_t* title;
+			int index;
+			double width;
+
+		};
+
+		struct FormatStyle
+		{
+		public:
+			const wchar_t* name;
+			int size;
+			AlignH horizontalAlign = AlignH::ALIGNH_LEFT;
+			AlignV verticalAlign = AlignV::ALIGNV_TOP;
+			unsigned char style = 0x00;
+			Color fontColor = { 0, 0, 0 };
+			Color cellColor;
+			FillPattern cellFill = FillPattern::FILLPATTERN_NONE;
+
+		};
+
 	public:
-		int r = 255;
-		int g = 255;
-		int b = 255;
+		static void Init();
+		static void AddResultToBook(Veridox::TestResult& result);
+		static void Shutdown();
+
+	private:
+		static int m_titleRowIndex;
+		static int m_totalRows;
+		static int m_totalColumns;
+
+		static Book* m_book;
+		static Sheet* m_sheet;
+
+		static Format* m_normalFormat;
+		static Format* m_idFormat;
+		static Format* m_successFormat;
+		static Format* m_failedFormat;
+		static Format* m_titleFormat;
+
+		static FormatStyle m_idStyle;
+		static FormatStyle m_normalStyle;
+		static FormatStyle m_successStyle;
+		static FormatStyle m_failedStyle;
+		static FormatStyle m_titleStyle;
+
+		static vector<ColumnInfo> m_columns;
+
+	private:
+		static void CreateColumn(ColumnInfo& info);
+
+		static void InitFormats();
+		static Format* MakeFormat(FormatStyle& style, Font* baseFont = nullptr);
 
 	};
-
-	struct ColumnInfo
-	{
-	public:
-		const wchar_t* title;
-		int index;
-		double width;
-
-	};
-
-	struct FormatStyle
-	{
-	public:
-		const wchar_t* name;
-		int size;
-		AlignH horizontalAlign = AlignH::ALIGNH_LEFT;
-		AlignV verticalAlign = AlignV::ALIGNV_TOP;
-		unsigned char style = 0x00;
-		Color fontColor = { 0, 0, 0 };
-		Color cellColor;
-		FillPattern cellFill = FillPattern::FILLPATTERN_NONE;
-
-	};
-
-public:
-	static void Init();
-	static void AddResultToBook(Veridox::TestResult& result);
-	static void Shutdown();
-
-private:
-	static int m_titleRowIndex;
-	static int m_totalRows;
-	static int m_totalColumns;
-
-	static Book* m_book;
-	static Sheet* m_sheet;
-
-	static Format* m_normalFormat;
-	static Format* m_idFormat;
-	static Format* m_successFormat;
-	static Format* m_failedFormat;
-	static Format* m_titleFormat;
-
-	static FormatStyle m_idStyle;
-	static FormatStyle m_normalStyle;
-	static FormatStyle m_successStyle;
-	static FormatStyle m_failedStyle;
-	static FormatStyle m_titleStyle;
-
-	static vector<ColumnInfo> m_columns;
-
-private:
-	static void CreateColumn(ColumnInfo& info);
-
-	static void InitFormats();
-	static Format* MakeFormat(FormatStyle& style, Font* baseFont = nullptr);
-
-};
+}

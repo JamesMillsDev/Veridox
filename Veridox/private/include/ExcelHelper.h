@@ -11,10 +11,20 @@ using libxl::Sheet;
 using libxl::AlignH;
 using libxl::AlignV;
 using libxl::AlignV;
+using libxl::FillPattern;
 
 class ExcelHelper
 {
 private:
+	struct Color
+	{
+	public:
+		int r = 255;
+		int g = 255;
+		int b = 255;
+
+	};
+
 	struct ColumnInfo
 	{
 	public:
@@ -29,9 +39,12 @@ private:
 	public:
 		const wchar_t* name;
 		int size;
-		AlignH horizontalAlign;
-		AlignV verticalAlign;
-		unsigned char style;
+		AlignH horizontalAlign = AlignH::ALIGNH_LEFT;
+		AlignV verticalAlign = AlignV::ALIGNV_TOP;
+		unsigned char style = 0x00;
+		Color fontColor = { 0, 0, 0 };
+		Color cellColor;
+		FillPattern cellFill = FillPattern::FILLPATTERN_NONE;
 
 	};
 
@@ -56,6 +69,8 @@ private:
 
 	static FormatStyle m_idStyle;
 	static FormatStyle m_normalStyle;
+	static FormatStyle m_successStyle;
+	static FormatStyle m_failedStyle;
 	static FormatStyle m_titleStyle;
 
 	static vector<ColumnInfo> m_columns;

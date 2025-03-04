@@ -33,13 +33,38 @@ ExcelHelper::FormatStyle ExcelHelper::m_normalStyle =
 	AlignV::ALIGNV_CENTER,
 	0x00
 };
+ExcelHelper::FormatStyle ExcelHelper::m_failedStyle =
+{
+	L"Calibri",
+	14,
+	AlignH::ALIGNH_CENTER,
+	AlignV::ALIGNV_CENTER,
+	0x00,
+	{156, 0, 6},
+	{255, 199, 206},
+	FillPattern::FILLPATTERN_SOLID
+};
+ExcelHelper::FormatStyle ExcelHelper::m_successStyle =
+{
+	L"Calibri",
+	14,
+	AlignH::ALIGNH_CENTER,
+	AlignV::ALIGNV_CENTER,
+	0x00,
+	{0, 97, 0},
+	{198, 239, 206},
+	FillPattern::FILLPATTERN_SOLID
+};
 ExcelHelper::FormatStyle ExcelHelper::m_titleStyle =
 {
 	nullptr,
 	25,
 	AlignH::ALIGNH_CENTER,
 	AlignV::ALIGNV_CENTER,
-	0x00 | 0x01
+	0x00 | 0x01,
+	{255, 255, 255},
+	{21, 96, 130},
+	FillPattern::FILLPATTERN_SOLID
 };
 
 vector<ExcelHelper::ColumnInfo> ExcelHelper::m_columns =
@@ -118,15 +143,8 @@ void ExcelHelper::InitFormats()
 	m_idFormat = MakeFormat(m_idStyle, m_normalFormat->font());
 	m_titleFormat = MakeFormat(m_titleStyle, m_normalFormat->font());
 
-	m_successFormat = MakeFormat(m_normalStyle, m_normalFormat->font());
-	m_successFormat->setFillPattern(libxl::FILLPATTERN_SOLID);
-	m_successFormat->setPatternForegroundColor(m_book->colorPack(198, 239, 206));
-	m_successFormat->font()->setColor(m_book->colorPack(0, 97, 0));
-
-	m_failedFormat = MakeFormat(m_normalStyle, m_normalFormat->font());
-	m_failedFormat->setFillPattern(libxl::FILLPATTERN_SOLID);
-	m_failedFormat->setPatternForegroundColor(m_book->colorPack(255, 199, 206));
-	m_failedFormat->font()->setColor(m_book->colorPack(156, 0, 6));
+	m_successFormat = MakeFormat(m_successStyle, m_normalFormat->font());
+	m_failedFormat = MakeFormat(m_failedStyle, m_normalFormat->font());
 }
 
 Format* ExcelHelper::MakeFormat(FormatStyle& style, Font* baseFont)
@@ -159,10 +177,15 @@ Format* ExcelHelper::MakeFormat(FormatStyle& style, Font* baseFont)
 		font->setStrikeOut();
 	}
 
+	font->setColor(m_book->colorPack(style.fontColor.r, style.fontColor.g, style.fontColor.b));
+
 	Format* fmt = m_book->addFormat();
 	fmt->setFont(font);
 	fmt->setAlignH(style.horizontalAlign);
 	fmt->setAlignV(style.verticalAlign);
+
+	fmt->setFillPattern(style.cellFill);
+	fmt->setPatternForegroundColor(m_book->colorPack(style.cellColor.r, style.cellColor.g, style.cellColor.b));
 
 	return fmt;
 }

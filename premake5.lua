@@ -90,7 +90,7 @@ project "Veridox-Sample"
     links "Veridox.lib"
 
     defines "_CONSOLE"
-    debugdir "$(OutDir)"
+    debugdir "Builds\\%{prj.name}"
 
     filter "platforms:x86"
         architecture "x32"

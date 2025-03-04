@@ -49,7 +49,7 @@ project "Veridox"
         defines "_DEBUG"
 
 project "Veridox-Sample"
-    location "Sample"
+    location "Veridox-Sample"
     filename "Veridox-Sample"
 
     kind "ConsoleApp"

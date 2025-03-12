@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 
+using std::runtime_error;
+
 namespace Veridox
 {
 	TestInitFnc Veridox::m_init;
@@ -41,30 +43,31 @@ namespace Veridox
 		}
 
 		int passed = 0;
-		string reason;
-
-		time_t t = std::time(nullptr);
-		tm dateTime;
-
-		GetLocalTime(&dateTime, &t);
-
-		string header;
-		/*MakeHeader(header, false, 0, 0, &dateTime);*/
-
-		std::cout << header;
-
-		stringstream stream;
 
 		for (int i = 0; i < static_cast<int>(m_tests.size()); ++i)
 		{
+			string reason;
+
 			auto& [name, test] = m_tests[i];
 
-			bool succeeded = test(reason);
+			bool succeeded = false;
+
+			try
+			{
+				test();
+				succeeded = true;
+			}
+			catch (runtime_error& e)
+			{
+				reason = e.what();
+			}
 
 			TestResult state =
 			{
 				name, i + 1, succeeded, reason
 			};
+
+			OutputTest(std::cout, false, state);
 
 			if (succeeded)
 			{
@@ -78,6 +81,17 @@ namespace Veridox
 		{
 			m_shutdown(passed, m_tests.size());
 		}
+	}
+
+	void Veridox::OutputTest(ostream& stream, bool isFileStream, TestResult& state)
+	{
+		stream << std::format(
+			"{}Test {:0>3} {}{:12} {:18}{} {}\n",
+			(isFileStream ? "" : "\x1B[33m"),
+			state.id, (isFileStream ? "" : "\x1B[36m"),
+			state.name, (isFileStream ? state.success ? "Successful" : "Failed" : state.success ? "\x1B[32mSuccessful" : "\x1B[31mFailed"),
+			(isFileStream ? "" : "\x1B[37m"),
+			(state.success ? "" : string("Reason: ") + state.failReason));
 	}
 
 	//void Veridox::OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime)
@@ -123,15 +137,4 @@ namespace Veridox
 	//
 	//	header = stream.str();
 	//}
-
-	//void Veridox::OutputTest(ostream& stream, bool isFileStream, TestResult& state)
-	//{
-	//	stream << std::format(
-	//		"{}Test {:0>3} {}{:12} {:18}{} {}\n",
-	//		(isFileStream ? "" : "\x1B[33m"),
-	//		state.id, (isFileStream ? "" : "\x1B[36m"),
-	//		state.name, (isFileStream ? state.success ? "Successful" : "Failed" : state.success ? "\x1B[32mSuccessful" : "\x1B[31mFailed"),
-	//		(isFileStream ? "" : "\x1B[37m"),
-	//		(state.success ? "" : string("Reason: ") + state.failReason));
-	//} 
 }

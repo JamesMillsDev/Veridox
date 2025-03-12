@@ -1,11 +1,14 @@
-#include "Veridox/Veridox.h"
+#include "VAssert.h"
+#include "Veridox.h"
 
 TEST(Banana)
 {
-	return true;
+	Veridox::VAssert::IsTrue(false, "Test failure");
 }
 
 TEST(Banana2)
 {
-	return false;
+	Veridox::VAssert::IsTrue(true, "Test failure");
 }
+
+VERIDOX_MAIN

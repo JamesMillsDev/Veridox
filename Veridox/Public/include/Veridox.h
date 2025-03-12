@@ -11,7 +11,7 @@ using std::vector;
 
 namespace Veridox
 {
-	typedef bool(*TestFnc)(string& reason);
+	typedef void(*TestFnc)();
 	typedef void(*TestInitFnc)();
 	typedef void(*TestShutdownFnc)(int passCount, size_t maxTestCount);
 
@@ -50,9 +50,8 @@ namespace Veridox
 		static TestShutdownFnc m_shutdown;
 
 	private:
-		/*static void OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime);
-		static void MakeHeader(string& header, bool isFileMode, int passCount, size_t testCount, tm* dateTime);*/
-
+		static void OutputTest(ostream& stream, bool isFileStream, TestResult& state);
+		
 	};
 
 	inline vector<Veridox::Test> Veridox::m_tests;
@@ -60,12 +59,12 @@ namespace Veridox
 
 #pragma region Macros
 #define TEST(FUNC_NAME) \
-	bool Test##FUNC_NAME(string& reason); \
+	void Test##FUNC_NAME(); \
 	struct TestStruct##FUNC_NAME { \
 		TestStruct##FUNC_NAME() { Veridox::Veridox::RegisterTest({#FUNC_NAME, Test##FUNC_NAME}); } \
 	}; \
 	TestStruct##FUNC_NAME testStruct##FUNC_NAME; \
-	bool Test##FUNC_NAME(string& reason)
+	void Test##FUNC_NAME()
 
 #define TEST_INIT(FUNC_NAME) \
 	void Test##FUNC_NAME(); \

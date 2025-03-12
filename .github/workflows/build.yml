@@ -1,0 +1,39 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest  # ✅ Use Windows for .lib files
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up MSVC Developer Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1  # ✅ Ensures MSVC (cl.exe, link.exe) is available
+
+    - name: Configure CMake
+      run: cmake -S Veridox -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20 -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Run Tests
+      run: ctest --test-dir build -C Release
+
+    - name: Install
+      run: cmake --install build --config Release --prefix ${{ github.workspace }}/install
+
+    - name: Debug Install Directory
+      run: Get-ChildItem -Recurse ${{ github.workspace }}/install  # ✅ Windows equivalent of `ls -R`
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: veridox_commit_${{ github.sha }}
+        path: ${{ github.workspace }}/install/

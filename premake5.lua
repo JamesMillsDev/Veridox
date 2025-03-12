@@ -34,6 +34,7 @@ project "Veridox"
     }
 
     libdirs "%{wks.location}\\Dependencies\\lib"
+    links "xlnt.lib"
 
     postbuildcommands
     {
@@ -44,12 +45,8 @@ project "Veridox"
         architecture "x32"
         defines "WIN32"
 
-        links "libxl32.lib"
-
     filter "platforms:x64"
         architecture "x64"
-
-        links "libxl64.lib"
 
     filter "configurations:Debug"
         defines "_DEBUG"
@@ -82,6 +79,7 @@ project "Veridox-Sample"
     includedirs
     {
         "%{prj.location}\\include\\",
+        "Veridox\\Public\\include\\",
         "%{wks.location}\\Dependencies\\include\\"
     }
 
@@ -96,14 +94,8 @@ project "Veridox-Sample"
         architecture "x32"
         defines "WIN32"
 
-        links "libxl32.lib"
-        postbuildcommands "copy /Y \"%{wks.location}Dependencies\\lib\\native\\libxl32.dll\" \"$(OutDir)libxl32.dll\""
-
     filter "platforms:x64"
         architecture "x64"
-
-        links "libxl64.lib"
-        postbuildcommands "copy /Y \"%{wks.location}Dependencies\\lib\\native\\libxl64.dll\" \"$(OutDir)libxl64.dll\""
 
     filter "configurations:Debug"
         defines "_DEBUG"

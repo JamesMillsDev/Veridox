@@ -13,4 +13,12 @@ namespace Veridox
 			throw(runtime_error(message));
 		}
 	}
+
+	void VAssert::IsTrue(ConditionalPredicate predicate, const string& message)
+	{
+		if(!predicate())
+		{
+			throw(runtime_error(message));
+		}
+	}
 }

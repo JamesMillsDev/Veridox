@@ -1,14 +1,30 @@
 #include "VAssert.h"
 #include "Veridox.h"
 
-TEST(Banana)
+using Veridox::VAssert;
+
+TEST(ConditionalAssertionFailure)
 {
-	Veridox::VAssert::IsTrue(false, "Test failure");
+	VAssert::IsTrue(false, "Test failure");
 }
 
-TEST(Banana2)
+TEST(ConditionalAssertionSuccess)
 {
-	Veridox::VAssert::IsTrue(true, "Test failure");
+	VAssert::IsTrue(true, "Test success");
+}
+
+TEST(PredicateAssertionFailure)
+{
+	auto pred = []() { return false; };
+
+	VAssert::IsTrue(pred, "Test failure");
+}
+
+TEST(PredicateAssertionSuccess)
+{
+	auto pred = []() { return true; };
+
+	VAssert::IsTrue(pred, "Test success");
 }
 
 VERIDOX_MAIN

@@ -4,7 +4,9 @@
 #include <iomanip>
 #include <iostream>
 
-using std::runtime_error;
+#include <xlnt/xlnt.hpp>
+
+using std::exception;
 
 namespace Veridox
 {
@@ -57,7 +59,7 @@ namespace Veridox
 				test();
 				succeeded = true;
 			}
-			catch (runtime_error& e)
+			catch (exception& e)
 			{
 				reason = e.what();
 			}

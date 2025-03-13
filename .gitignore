@@ -6,6 +6,7 @@
 *.filters
 
 Dependencies/include/Veridox/
+*.xlsx
 
 ### C++ ###
 # Prerequisites
@@ -76,6 +77,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+[Bu]uilds/
+[Ii]ntermediate/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

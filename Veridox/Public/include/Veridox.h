@@ -87,19 +87,17 @@ namespace Veridox
 #include <crtdbg.h>
 #include <cstdlib>
 
-#ifndef VERIDOX_MAIN
 #define VERIDOX_MAIN \
 	int main() { \
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);\
 		Veridox::Veridox::Run();\
 		return 0; \
-	} 
+	}
 #else
 #define VERIDOX_MAIN \
 	int main() { \
 		Veridox::Veridox::Run();\
 		return 0; \
 	}
-#endif  
 #pragma endregion  
 #endif //

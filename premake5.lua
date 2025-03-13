@@ -10,7 +10,7 @@ project "Veridox"
     filename "Veridox"
 
     kind "StaticLib"
-    staticruntime "On"
+    staticruntime "Off"
 
     language "C++"
     cppdialect "C++20"
@@ -34,7 +34,6 @@ project "Veridox"
     }
 
     libdirs "%{wks.location}\\Dependencies\\lib"
-    links "xlnt.lib"
 
     postbuildcommands
     {
@@ -49,18 +48,20 @@ project "Veridox"
         architecture "x64"
 
     filter "configurations:Debug"
-        defines "_DEBUG"
+        defines {"_DEBUG", "_ITERATOR_DEBUG_LEVEL=2" }
         runtime "Debug"
+        links "xlntd.lib"
         
     filter "configurations:Release"
         runtime "Release"
+        links "xlnt.lib"
 
 project "Veridox-Sample"
     location "Veridox-Sample"
     filename "Veridox-Sample"
 
     kind "ConsoleApp"
-    staticruntime "On"
+    staticruntime "Off"
 
     language "C++"
     cppdialect "C++20"
@@ -98,7 +99,7 @@ project "Veridox-Sample"
         architecture "x64"
 
     filter "configurations:Debug"
-        defines "_DEBUG"
+        defines {"_DEBUG", "_ITERATOR_DEBUG_LEVEL=2" }
         runtime "Debug"
         
     filter "configurations:Release"

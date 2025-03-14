@@ -1,5 +1,8 @@
 #pragma once
-class Sheet
-{
-};
 
+namespace Veridox::Private
+{
+	class Sheet
+	{
+	};
+}

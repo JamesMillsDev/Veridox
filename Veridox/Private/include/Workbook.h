@@ -1,5 +1,8 @@
 #pragma once
-class Workbook
-{
-};
 
+namespace Veridox::Private
+{
+	class Workbook
+	{
+	};
+}

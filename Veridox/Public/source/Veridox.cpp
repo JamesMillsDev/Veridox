@@ -56,6 +56,16 @@ namespace Veridox
 
 		Sheet* sheet = excel->GetSheet("Tests");
 
+		const uint32_t idCategory = sheet->MakeCategory("ID");
+		const uint32_t nameCategory = sheet->MakeCategory("Name");
+		const uint32_t resultCategory = sheet->MakeCategory("Result");
+		const uint32_t messageCategory = sheet->MakeCategory("Message");
+
+		sheet->SetColumnWidth(idCategory, 8.00);
+		sheet->SetColumnWidth(nameCategory, 15.00);
+		sheet->SetColumnWidth(resultCategory, 15.00);
+		sheet->SetColumnWidth(messageCategory, 150.00);
+
 		for (int i = 0; i < static_cast<int>(m_tests.size()); ++i)
 		{
 			string reason;
@@ -81,7 +91,10 @@ namespace Veridox
 
 			OutputTest(std::cout, false, state);
 
-			sheet->Set(0, i + 1, "Help", &Styles::failed);
+			sheet->Set(idCategory, i + 2, i + 1, &Styles::id[i % 2]);
+			sheet->Set(nameCategory, i + 2, name, &Styles::normalBody[i % 2]);
+			sheet->Set(resultCategory, i + 2, state.success ? "Succeeded" : "Failed", state.success ? &Styles::succeeded : &Styles::failed);
+			sheet->Set(messageCategory, i + 2, state.failReason, &Styles::normalBody[i % 2]);
 
 			if (succeeded)
 			{

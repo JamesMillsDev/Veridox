@@ -14,16 +14,18 @@ namespace Veridox::Private
 		Sheet(worksheet& sheet);
 
 	public:
-		void SetColumnWidth(uint32_t column, double width);
-		void SetRowHeight(uint32_t row, double height);
+		void SetColumnWidth(uint32_t column, double width) const;
+		void SetRowHeight(uint32_t row, double height) const;
 
-		Cell At(uint32_t column, uint32_t row);
+		Cell At(uint32_t column, uint32_t row) const;
 
-		void Set(uint32_t column, uint32_t row, uint32_t value, Style* style = nullptr);
-		void Set(uint32_t column, uint32_t row, const string& value, Style* style = nullptr);
-		void Set(uint32_t column, uint32_t row, datetime value, Style* style = nullptr);
+		void Set(uint32_t column, uint32_t row, uint32_t value, Style* style = nullptr) const;
+		void Set(uint32_t column, uint32_t row, const string& value, Style* style = nullptr) const;
+		void Set(uint32_t column, uint32_t row, const datetime& value, Style* style = nullptr) const;
 
-		string Name();
+		uint32_t MakeCategory(const string& title) const;
+
+		string Name() const;
 
 	private:
 		worksheet& m_sheet;

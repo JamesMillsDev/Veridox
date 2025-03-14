@@ -7,12 +7,12 @@ using xlnt::workbook;
 
 namespace Veridox::Private
 {
-	Cell::Cell(cell& cell)
+	Cell::Cell(const cell& cell)
 		: column{ cell.column_index() }, row{ cell.row() }, m_cell{ cell }
 	{
 	}
 
-	void Cell::Set(uint32_t value)
+	void Cell::Set(const uint32_t value)
 	{
 		m_cell.value(value);
 	}
@@ -22,7 +22,7 @@ namespace Veridox::Private
 		m_cell.value(value);
 	}
 
-	void Cell::Set(datetime value)
+	void Cell::Set(const datetime& value)
 	{
 		m_cell.value(value);
 	}

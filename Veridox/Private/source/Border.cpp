@@ -2,7 +2,16 @@
 
 namespace Veridox::Private
 {
-	Border BorderTypes::none;
+	Border BorderTypes::none
+	{
+		map<EBorderSide, Border::Property>
+		{
+			{ EBorderSide::top, Border::Property(0x00000000, EBorderStyle::none) },
+			{ EBorderSide::bottom, Border::Property(0x00000000, EBorderStyle::none) },
+			{ EBorderSide::start, Border::Property(0x00000000, EBorderStyle::none) },
+			{ EBorderSide::end, Border::Property(0x00000000, EBorderStyle::none) },
+		}
+	};
 	Border BorderTypes::all
 	{
 		map<EBorderSide, Border::Property>

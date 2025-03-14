@@ -59,7 +59,7 @@ namespace Veridox::Private
 		}
 
 		worksheet sheet = m_workbook->active_sheet();
-		sheet.title(name);
+		//sheet.title(name);
 
 		Sheet* newSheet = new Sheet(sheet);
 		m_sheets.emplace_back(newSheet);

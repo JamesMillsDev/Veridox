@@ -11,13 +11,13 @@ namespace Veridox::Private
 	Style Styles::normalBody[2] =
 	{
 		Style("Normal 1", &FontTypes::normal, 0xd9d9d9ff, &Alignments::normal, &BorderTypes::none),
-		Style("Normal 2", &FontTypes::normal, 0xffffffff, &Alignments::normal, &BorderTypes::none)
+		Style("Normal 2", &FontTypes::normal, 0x00000000, &Alignments::normal, &BorderTypes::none)
 	};
 
 	Style Styles::id[2] =
 	{
-		Style("ID 1", &FontTypes::normal, 0xd9d9d9ff, &Alignments::title, &BorderTypes::none, number_format::number_00()),
-		Style("ID 2", &FontTypes::normal, 0xffffffff, &Alignments::title, &BorderTypes::none, number_format::number_00())
+		Style("ID 1", &FontTypes::normal, 0xd9d9d9ff, &Alignments::title, &BorderTypes::none, number_format::number()),
+		Style("ID 2", &FontTypes::normal, 0x00000000, &Alignments::title, &BorderTypes::none, number_format::number())
 	};
 
 	Style Styles::failed("Failed Test", &FontTypes::failed, 0xffc7ceff, &Alignments::title, &BorderTypes::none);
@@ -63,7 +63,10 @@ namespace Veridox::Private
 		reference.name(name);
 
 		reference.font(*font);
-		reference.fill(fill::solid(fill));
+		if (fill.a == 255)
+		{
+			reference.fill(fill::solid(fill));
+		}
 
 		reference.alignment(*alignment);
 		reference.border(*border);

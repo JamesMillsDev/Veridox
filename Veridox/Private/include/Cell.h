@@ -22,12 +22,12 @@ namespace Veridox::Private
 		uint32_t row;
 
 	public:
-		Cell(cell& cell);
+		Cell(const cell& cell);
 
 	public:
 		void Set(uint32_t value);
 		void Set(const string& value);
-		void Set(datetime value);
+		void Set(const datetime& value);
 
 		void SetStyle(Style& style, worksheet& sheet);
 

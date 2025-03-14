@@ -35,7 +35,7 @@ namespace Veridox::Private
 		Style(const string& name, Font* font, Color fill, CellAlignment* alignment, Border* border, number_format numberFormat);
 
 	public:
-		style& ToExcel(style& other);
+		style& ToExcel(style other);
 
 	};
 

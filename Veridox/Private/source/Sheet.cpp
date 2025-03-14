@@ -26,7 +26,9 @@ namespace Veridox::Private
 
 	Cell Sheet::At(uint32_t column, uint32_t row)
 	{
-		return { column, row, m_sheet };
+		cell c = m_sheet.cell(xlnt::column_t(column + 1), row);
+
+		return Cell(c);
 	}
 
 	void Sheet::Set(uint32_t column, uint32_t row, uint32_t value, Style* style)
@@ -35,7 +37,7 @@ namespace Veridox::Private
 
 		if (style != nullptr)
 		{
-			cell.SetStyle(*style);
+			cell.SetStyle(*style, m_sheet);
 		}
 
 		cell.Set(value);
@@ -47,7 +49,7 @@ namespace Veridox::Private
 
 		if (style != nullptr)
 		{
-			cell.SetStyle(*style);
+			cell.SetStyle(*style, m_sheet);
 		}
 
 		cell.Set(value);
@@ -59,7 +61,7 @@ namespace Veridox::Private
 
 		if (style != nullptr)
 		{
-			cell.SetStyle(*style);
+			cell.SetStyle(*style, m_sheet);
 		}
 
 		cell.Set(value);

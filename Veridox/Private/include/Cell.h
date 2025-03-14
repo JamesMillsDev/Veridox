@@ -22,7 +22,6 @@ namespace Veridox::Private
 		uint32_t row;
 
 	public:
-		Cell(uint32_t column, uint32_t row, worksheet ws);
 		Cell(cell& cell);
 
 	public:
@@ -30,7 +29,7 @@ namespace Veridox::Private
 		void Set(const string& value);
 		void Set(datetime value);
 
-		void SetStyle(Style& style);
+		void SetStyle(Style& style, worksheet& sheet);
 
 	private:
 		cell m_cell;

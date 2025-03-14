@@ -58,7 +58,7 @@ namespace Veridox::Private
 	{
 	}
 
-	style& Style::ToExcel(style reference)
+	style Style::ToExcel(style reference)
 	{
 		reference.name(name);
 

@@ -1,14 +1,12 @@
 #include "Cell.h"
 
 #include <xlnt/worksheet/worksheet.hpp>
+#include <xlnt/workbook/workbook.hpp>
+
+using xlnt::workbook;
 
 namespace Veridox::Private
 {
-	Cell::Cell(uint32_t column, uint32_t row, worksheet ws)
-		: column{ column }, row{ row }, m_cell{ ws.cell(xlnt::column_t(column), row) }
-	{
-	}
-
 	Cell::Cell(cell& cell)
 		: column{ cell.column_index() }, row{ cell.row() }, m_cell{ cell }
 	{
@@ -29,10 +27,15 @@ namespace Veridox::Private
 		m_cell.value(value);
 	}
 
-	void Cell::SetStyle(Style& style)
+	void Cell::SetStyle(Style& style, worksheet& sheet)
 	{
-		xlnt::style s = style.ToExcel(m_cell.style());
+		workbook book = sheet.workbook();
 
-		m_cell.style(s);
+		if (!book.has_style(style.name))
+		{
+			book.create_style(style.name);
+		}
+
+		m_cell.style(style.ToExcel(book.style(style.name)));
 	}
 }

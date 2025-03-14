@@ -4,12 +4,16 @@
 #include <iomanip>
 #include <iostream>
 
-#include <xlnt/xlnt.hpp>
+#include "Excel.h"
 
 using std::exception;
 
 namespace Veridox
 {
+	using Private::Excel;
+	using Private::Sheet;
+	using Private::Styles;
+
 	TestInitFnc Veridox::m_init;
 	TestShutdownFnc Veridox::m_shutdown;
 
@@ -46,6 +50,12 @@ namespace Veridox
 
 		int passed = 0;
 
+		Excel* excel = new Excel("tests.xlsx");
+
+		excel->Open();
+
+		Sheet* sheet = excel->GetSheet("Tests");
+
 		for (int i = 0; i < static_cast<int>(m_tests.size()); ++i)
 		{
 			string reason;
@@ -71,6 +81,8 @@ namespace Veridox
 
 			OutputTest(std::cout, false, state);
 
+			sheet->Set(0, i + 1, "Help", &Styles::failed);
+
 			if (succeeded)
 			{
 				passed++;
@@ -83,6 +95,10 @@ namespace Veridox
 		{
 			m_shutdown(passed, m_tests.size());
 		}
+		
+		excel->Close();
+
+		delete excel;
 	}
 
 	void Veridox::OutputTest(ostream& stream, bool isFileStream, TestResult& state)

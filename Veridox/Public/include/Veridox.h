@@ -99,5 +99,5 @@ namespace Veridox
 		Veridox::Veridox::Run();\
 		return 0; \
 	}
-#pragma endregion  
 #endif //
+#pragma endregion  

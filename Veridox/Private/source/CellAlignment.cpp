@@ -2,8 +2,8 @@
 
 namespace Veridox::Private
 {
-	CellAlignment Alignments::normal(horizontal_alignment::left, vertical_alignment::center);
-	CellAlignment Alignments::title(horizontal_alignment::center, vertical_alignment::center);
+	CellAlignment* Alignments::normal = nullptr;
+	CellAlignment* Alignments::title = nullptr;
 
 	CellAlignment::CellAlignment()
 		: horizontal{ horizontal_alignment::left }, vertical{ vertical_alignment::top }
@@ -23,5 +23,17 @@ namespace Veridox::Private
 		alignment.vertical(vertical);
 
 		return alignment;
+	}
+
+	void Alignments::Init()
+	{
+		normal = new CellAlignment(horizontal_alignment::left, vertical_alignment::center);
+		title = new CellAlignment(horizontal_alignment::center, vertical_alignment::center);
+	}
+
+	void Alignments::Shutdown()
+	{
+		delete normal;
+		delete title;
 	}
 }

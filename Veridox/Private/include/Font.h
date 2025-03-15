@@ -41,24 +41,28 @@ namespace Veridox::Private
 		Font(const string& name, double size);
 		Font(const string& name, double size, Color color);
 		Font(const string& name, double size, Color color, uint8_t styleFlags);
-		Font(const string& name, double size, Color color, uint8_t styleFlags, EUnderlineStyle underlineStyle);
+		Font(string name, double size, Color color, uint8_t styleFlags, EUnderlineStyle underlineStyle);
 
 	public:
 		operator font();
 
 	private:
-		void SetFontStyle(font& f, EStyleFlags flag, FontStyleSetter setter);
+		void SetFontStyle(font& f, EStyleFlags flag, FontStyleSetter setter) const;
 
 	};
 
 	class FontTypes
 	{
 	public:
-		static Font normal;
-		static Font title;
+		static Font* normal;
+		static Font* title;
 
-		static Font failed;
-		static Font succeeded;
+		static Font* failed;
+		static Font* succeeded;
+
+	public:
+		static void Init();
+		static void Shutdown();
 
 	};
 }

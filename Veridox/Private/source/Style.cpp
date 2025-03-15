@@ -6,22 +6,13 @@ using xlnt::fill;
 
 namespace Veridox::Private
 {
-	Style Styles::title("Title", &FontTypes::title, 0x156082ff, &Alignments::title, &BorderTypes::title);
+	Style* Styles::title = nullptr;
 
-	Style Styles::normalBody[2] =
-	{
-		Style("Normal 1", &FontTypes::normal, 0xd9d9d9ff, &Alignments::normal, &BorderTypes::none),
-		Style("Normal 2", &FontTypes::normal, 0x00000000, &Alignments::normal, &BorderTypes::none)
-	};
+	Style* Styles::normalBody[2] = { nullptr, nullptr };
+	Style* Styles::id[2] = { nullptr, nullptr };
 
-	Style Styles::id[2] =
-	{
-		Style("ID 1", &FontTypes::normal, 0xd9d9d9ff, &Alignments::title, &BorderTypes::none, number_format::number()),
-		Style("ID 2", &FontTypes::normal, 0x00000000, &Alignments::title, &BorderTypes::none, number_format::number())
-	};
-
-	Style Styles::failed("Failed Test", &FontTypes::failed, 0xffc7ceff, &Alignments::title, &BorderTypes::none);
-	Style Styles::succeeded("Succeeded Test", &FontTypes::succeeded, 0xc6efceff, &Alignments::title, &BorderTypes::none);
+	Style* Styles::failed = nullptr;
+	Style* Styles::succeeded = nullptr;
 
 	Style::Style()
 		: Style("Normal")
@@ -29,7 +20,7 @@ namespace Veridox::Private
 	}
 
 	Style::Style(const string& name)
-		: Style(name, &FontTypes::normal)
+		: Style(name, FontTypes::normal)
 	{
 	}
 
@@ -39,12 +30,12 @@ namespace Veridox::Private
 	}
 
 	Style::Style(const string& name, Font* font, Color fill)
-		: Style(name, font, fill, &Alignments::normal)
+		: Style(name, font, fill, Alignments::normal)
 	{
 	}
 
 	Style::Style(const string& name, Font* font, Color fill, CellAlignment* alignment)
-		: Style(name, font, fill, alignment, &BorderTypes::none)
+		: Style(name, font, fill, alignment, BorderTypes::none)
 	{
 	}
 
@@ -53,8 +44,9 @@ namespace Veridox::Private
 	{
 	}
 
-	Style::Style(const string& name, Font* font, Color fill, CellAlignment* alignment, Border* border, number_format numberFormat)
-		: name{ name }, font{ font }, fill{ fill }, alignment{ alignment }, border{ border }, numberFormat{ numberFormat }
+	Style::Style(string name, Font* font, Color fill, CellAlignment* alignment, Border* border, number_format numberFormat)
+		: name{ std::move(name) }, font{ font }, fill{ fill }, alignment{ alignment }, border{ border },
+		numberFormat{ std::move(numberFormat) }
 	{
 	}
 
@@ -74,5 +66,41 @@ namespace Veridox::Private
 		reference.number_format(numberFormat);
 
 		return reference;
+	}
+
+	void Styles::Init()
+	{
+		BorderTypes::Init();
+		FontTypes::Init();
+		Alignments::Init();
+
+		title = new Style("Title", FontTypes::title, 0x156082ff, Alignments::title, BorderTypes::title);
+
+		normalBody[0] = new Style("Normal 1", FontTypes::normal, 0xd9d9d9ff, Alignments::normal, BorderTypes::none);
+		normalBody[1] = new Style("Normal 2", FontTypes::normal, 0x00000000, Alignments::normal, BorderTypes::none);
+
+		id[0] = new Style("ID 1", FontTypes::normal, 0xd9d9d9ff, Alignments::title, BorderTypes::none, number_format::number());
+		id[1] = new Style("ID 2", FontTypes::normal, 0x00000000, Alignments::title, BorderTypes::none, number_format::number());
+
+		failed = new Style("Failed Test", FontTypes::failed, 0xffc7ceff, Alignments::title, BorderTypes::none);
+		succeeded = new Style("Succeeded Test", FontTypes::succeeded, 0xc6efceff, Alignments::title, BorderTypes::none);
+	}
+
+	void Styles::Shutdown()
+	{
+		delete title;
+
+		delete normalBody[0];
+		delete normalBody[1];
+
+		delete id[0];
+		delete id[1];
+
+		delete failed;
+		delete succeeded;
+
+		Alignments::Shutdown();
+		FontTypes::Shutdown();
+		BorderTypes::Shutdown();
 	}
 }

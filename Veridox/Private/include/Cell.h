@@ -29,7 +29,7 @@ namespace Veridox::Private
 		void Set(const string& value);
 		void Set(const datetime& value);
 
-		void SetStyle(Style& style, worksheet& sheet);
+		void SetStyle(Style& style, worksheet sheet);
 
 	private:
 		cell m_cell;

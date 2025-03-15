@@ -27,7 +27,7 @@ namespace Veridox::Private
 		m_cell.value(value);
 	}
 
-	void Cell::SetStyle(Style& style, worksheet& sheet)
+	void Cell::SetStyle(Style& style, worksheet sheet)
 	{
 		workbook book = sheet.workbook();
 

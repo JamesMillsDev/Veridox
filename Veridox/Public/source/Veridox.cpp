@@ -5,13 +5,13 @@
 #include <iostream>
 
 #include "Excel.h"
+#include "Style.h"
 
 using std::exception;
 
 namespace Veridox
 {
 	using Private::Excel;
-	using Private::Sheet;
 	using Private::Styles;
 
 	TestInitFnc Veridox::m_init;
@@ -50,21 +50,16 @@ namespace Veridox
 
 		int passed = 0;
 
+		Styles::Init();
+
 		Excel* excel = new Excel("tests.xlsx");
 
 		excel->Open();
 
-		Sheet* sheet = excel->GetSheet("Tests");
-
-		const uint32_t idCategory = sheet->MakeCategory("ID");
-		const uint32_t nameCategory = sheet->MakeCategory("Name");
-		const uint32_t resultCategory = sheet->MakeCategory("Result");
-		const uint32_t messageCategory = sheet->MakeCategory("Message");
-
-		sheet->SetColumnWidth(idCategory, 8.00);
-		sheet->SetColumnWidth(nameCategory, 15.00);
-		sheet->SetColumnWidth(resultCategory, 15.00);
-		sheet->SetColumnWidth(messageCategory, 150.00);
+		const uint32_t idCategory = excel->MakeCategory("ID", 5.00);
+		const uint32_t nameCategory = excel->MakeCategory("Name", 30.00);
+		const uint32_t resultCategory = excel->MakeCategory("Result", 15.00);
+		const uint32_t messageCategory = excel->MakeCategory("Message", 150.00);
 
 		for (int i = 0; i < static_cast<int>(m_tests.size()); ++i)
 		{
@@ -91,10 +86,10 @@ namespace Veridox
 
 			OutputTest(std::cout, false, state);
 
-			sheet->Set(idCategory, i + 2, i + 1, &Styles::id[i % 2]);
-			sheet->Set(nameCategory, i + 2, name, &Styles::normalBody[i % 2]);
-			sheet->Set(resultCategory, i + 2, state.success ? "Succeeded" : "Failed", state.success ? &Styles::succeeded : &Styles::failed);
-			sheet->Set(messageCategory, i + 2, state.failReason, &Styles::normalBody[i % 2]);
+			excel->Set(idCategory, i + 2, i + 1, Styles::id[i % 2]);
+			excel->Set(nameCategory, i + 2, name, Styles::normalBody[i % 2]);
+			excel->Set(resultCategory, i + 2, state.success ? "Succeeded" : "Failed", state.success ? Styles::succeeded : Styles::failed);
+			excel->Set(messageCategory, i + 2, state.failReason, Styles::normalBody[i % 2]);
 
 			if (succeeded)
 			{
@@ -111,6 +106,8 @@ namespace Veridox
 		
 		excel->Close();
 
+		Styles::Shutdown();
+
 		delete excel;
 	}
 
@@ -124,48 +121,4 @@ namespace Veridox
 			(isFileStream ? "" : "\x1B[37m"),
 			(state.success ? "" : string("Reason: ") + state.failReason));
 	}
-
-	//void Veridox::OutputLog(int passCount, size_t testCount, stringstream& testLines, tm* dateTime)
-	//{
-	//	fstream stream;
-	//
-	//	stream.open("tests.log", std::ios::out | std::ios::app);
-	//
-	//	if (stream.is_open())
-	//	{
-	//		string header;
-	//		MakeHeader(header, true, passCount, testCount, dateTime);
-	//
-	//		stream << header << testLines.str();
-	//	}
-	//
-	//	stream.close();
-	//}
-	//
-	//void Veridox::MakeHeader(string& header, bool isFileMode, int passCount, size_t testCount, tm* dateTime)
-	//{
-	//	stringstream stream;
-	//
-	//	if (!isFileMode)
-	//	{
-	//		stream << "\x1B[36m";
-	//	}
-	//
-	//	stream << "====================================================\n";
-	//	stream << "Date: " << std::put_time(dateTime, "%d/%m/%Y");
-	//	stream << " Time: " << std::put_time(dateTime, "%H:%M:%S");
-	//
-	//	if (isFileMode)
-	//	{
-	//		float successRate = static_cast<float>(passCount) / static_cast<float>(testCount);
-	//		successRate *= 100.f;
-	//
-	//		stream << " Successful: ";
-	//		stream << std::setprecision(2) << std::fixed << successRate << "%";
-	//	}
-	//
-	//	stream << "\n====================================================\n";
-	//
-	//	header = stream.str();
-	//}
 }

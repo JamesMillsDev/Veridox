@@ -3,13 +3,21 @@
 #include <cassert>
 #include <filesystem>
 
+#include <xlnt/cell/cell.hpp>
+#include <xlnt/worksheet/column_properties.hpp>
+
+#include "Style.h"
+
+using xlnt::cell_reference;
+using xlnt::column_t;
 using xlnt::path;
-using xlnt::worksheet;
 
 namespace Veridox::Private
 {
-	Excel::Excel(const string& wbName)
-		: m_workbook{ nullptr }, m_workbookName{ wbName }
+	static uint32_t columnIndex = 1;
+
+	Excel::Excel(string wbName)
+		: m_workbook{ nullptr }, m_workbookName{ std::move(wbName) }
 	{
 	}
 
@@ -25,45 +33,67 @@ namespace Veridox::Private
 		{
 			m_workbook = new workbook();
 		}
+
+		m_worksheet = m_workbook->active_sheet();
+		m_worksheet.title("Tests");
 	}
 
-	void Excel::Close()
+	void Excel::Close() const
 	{
 		assert(m_workbook != nullptr && "Workbook shouldn't be nullptr!");
 
 		m_workbook->save(m_workbookName);
 
-		for (auto& sheet : m_sheets)
-		{
-			delete sheet;
-		}
-
-		m_sheets.clear();
-
 		delete m_workbook;
 	}
 
-	Sheet* Excel::GetSheet(const string& name)
+	void Excel::Set(uint32_t column, uint32_t row, uint32_t value, Style* style)
 	{
-		if (m_workbook == nullptr)
-		{
-			return nullptr;
-		}
+		cell_reference ref(column_t(column), row);
 
-		for (const auto& sheet : m_sheets)
+		if (style != nullptr)
 		{
-			if (sheet->Name() == name)
+			string styleName = style->name;
+
+			if (!m_cachedStyles.contains(styleName))
 			{
-				return sheet;
+				m_cachedStyles[styleName] = new xlnt::style(m_workbook->create_style(styleName));
 			}
+
+			m_worksheet.cell(ref).style(style->ToExcel(*m_cachedStyles[styleName]));
 		}
 
-		worksheet sheet = m_workbook->active_sheet();
-		//sheet.title(name);
+		m_worksheet.cell(ref).value(value);
+	}
 
-		Sheet* newSheet = new Sheet(sheet);
-		m_sheets.emplace_back(newSheet);
+	void Excel::Set(uint32_t column, uint32_t row, string value, Style* style)
+	{
+		cell_reference ref(column_t(column), row);
 
-		return newSheet;
+		if (style != nullptr)
+		{
+			string styleName = style->name;
+
+			if (!m_cachedStyles.contains(styleName))
+			{
+				m_cachedStyles[styleName] = new xlnt::style(m_workbook->create_style(styleName));
+			}
+
+			m_worksheet.cell(ref).style(style->ToExcel(*m_cachedStyles[styleName]));
+		}
+
+		m_worksheet.cell(ref).value(value);
+	}
+
+	uint32_t Excel::MakeCategory(const string& id, double width)
+	{
+		assert(m_workbook && "Workbook must be opened!");
+
+		cell_reference ref(column_t(columnIndex++), 1);
+
+		m_worksheet.cell(ref).value(id);
+		m_worksheet.column_properties(ref.column()).width = width;
+
+		return ref.column_index();
 	}
 }

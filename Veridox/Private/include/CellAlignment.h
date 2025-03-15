@@ -26,8 +26,12 @@ namespace Veridox::Private
 	class Alignments
 	{
 	public:
-		static CellAlignment normal;
-		static CellAlignment title;
+		static CellAlignment* normal;
+		static CellAlignment* title;
+
+	public:
+		static void Init();
+		static void Shutdown();
 
 	};
 }

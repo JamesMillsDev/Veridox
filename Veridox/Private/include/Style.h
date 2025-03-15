@@ -32,22 +32,26 @@ namespace Veridox::Private
 		Style(const string& name, Font* font, Color fill);
 		Style(const string& name, Font* font, Color fill, CellAlignment* alignment);
 		Style(const string& name, Font* font, Color fill, CellAlignment* alignment, Border* border);
-		Style(const string& name, Font* font, Color fill, CellAlignment* alignment, Border* border, number_format numberFormat);
+		Style(string name, Font* font, Color fill, CellAlignment* alignment, Border* border, number_format numberFormat);
 
 	public:
-		style ToExcel(style other);
+		style ToExcel(style reference);
 
 	};
 
 	class Styles
 	{
 	public:
-		static Style title;
-		static Style normalBody[2];
-		static Style id[2];
+		static Style* title;
+		static Style* normalBody[2];
+		static Style* id[2];
 
-		static Style failed;
-		static Style succeeded;
+		static Style* failed;
+		static Style* succeeded;
+
+	public:
+		static void Init();
+		static void Shutdown();
 
 	};
 }

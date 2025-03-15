@@ -6,19 +6,19 @@ using std::pair;
 
 namespace Veridox::Private
 {
-	Font FontTypes::normal("Calibri", 12, 0x000000ff, EStyleFlags::Bold, EUnderlineStyle::none);
-	Font FontTypes::title("Calibri", 24, 0xffffffff, EStyleFlags::None, EUnderlineStyle::none);
+	Font* FontTypes::normal = nullptr;
+	Font* FontTypes::title = nullptr;
 
-	Font FontTypes::succeeded("Calibri", 12, 0x006100ff, EStyleFlags::None, EUnderlineStyle::none);
-	Font FontTypes::failed("Calibri", 12, 0x9c0006ff, EStyleFlags::None, EUnderlineStyle::none);
+	Font* FontTypes::succeeded = nullptr;
+	Font* FontTypes::failed = nullptr;
 
 	pair<EStyleFlags, FontStyleSetter> setters[] =
 	{
-		{ EStyleFlags::Bold, &font::bold },
-		{ EStyleFlags::Italic, &font::italic },
-		{ EStyleFlags::Strikethrough, &font::strikethrough },
-		{ EStyleFlags::Superscript, &font::superscript },
-		{ EStyleFlags::Subscript, &font::subscript },
+		{ Bold, &font::bold },
+		{ Italic, &font::italic },
+		{ Strikethrough, &font::strikethrough },
+		{ Superscript, &font::superscript },
+		{ Subscript, &font::subscript },
 	};
 
 	Font::Font()
@@ -32,12 +32,12 @@ namespace Veridox::Private
 	}
 
 	Font::Font(const string& name, double size)
-		: Font(name, 12, 0xffffffff)
+		: Font(name, size, 0xffffffff)
 	{
 	}
 
 	Font::Font(const string& name, double size, Color color)
-		: Font(name, size, color, EStyleFlags::None)
+		: Font(name, size, color, None)
 	{
 	}
 
@@ -46,8 +46,8 @@ namespace Veridox::Private
 	{
 	}
 
-	Font::Font(const string& name, double size, Color color, uint8_t styleFlags, EUnderlineStyle underlineStyle)
-		: name{ name }, size{ size }, color{ color }, styleFlags{ styleFlags }, underlineStyle{ underlineStyle }
+	Font::Font(string name, double size, Color color, uint8_t styleFlags, EUnderlineStyle underlineStyle)
+		: name{ std::move(name) }, size{ size }, color{ color }, styleFlags{ styleFlags }, underlineStyle{ underlineStyle }
 	{
 	}
 
@@ -67,8 +67,26 @@ namespace Veridox::Private
 		return f;
 	}
 
-	void Font::SetFontStyle(font& f, EStyleFlags flag, FontStyleSetter setter)
+	void Font::SetFontStyle(font& f, EStyleFlags flag, FontStyleSetter setter) const
 	{
 		(f.*setter)((styleFlags & flag) == flag);
+	}
+
+	void FontTypes::Init()
+	{
+		normal = new Font("Calibri", 12, 0x000000ff, Bold, EUnderlineStyle::none);
+		title = new Font("Calibri", 24, 0xffffffff, None, EUnderlineStyle::none);
+
+		succeeded = new Font("Calibri", 12, 0x006100ff, None, EUnderlineStyle::none);
+		failed = new Font("Calibri", 12, 0x9c0006ff, None, EUnderlineStyle::none);
+	}
+
+	void FontTypes::Shutdown()
+	{
+		delete normal;
+		delete title;
+
+		delete succeeded;
+		delete failed;
 	}
 }

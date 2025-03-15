@@ -1,35 +1,43 @@
 #pragma once
 
-#include <list>
+#include <map>
 #include <string>
 
+#include <xlnt/styles/style.hpp>
 #include <xlnt/workbook/workbook.hpp>
+#include <xlnt/worksheet/worksheet.hpp>
 
-#include "Sheet.h"
-
-using std::list;
+using std::map;
 using std::string;
 
+using xlnt::style;
 using xlnt::workbook;
+using xlnt::worksheet;
 
 namespace Veridox::Private
 {
+	class Style;
+
 	class Excel
 	{
 	public:
-		Excel(const string& wbName);
+		Excel(string wbName);
 
 	public:
 		void Open();
-		void Close();
+		void Close() const;
 
-		Sheet* GetSheet(const string& name);
+		void Set(uint32_t column, uint32_t row, uint32_t value, Style* style = nullptr);
+		void Set(uint32_t column, uint32_t row, string value, Style* style = nullptr);
+
+		uint32_t MakeCategory(const string& id, double width);
 
 	private:
 		workbook* m_workbook;
+		worksheet m_worksheet;
 		string m_workbookName;
 
-		list<Sheet*> m_sheets;
+		map<string, style*> m_cachedStyles;
 
 	};
 }

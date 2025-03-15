@@ -51,9 +51,13 @@ namespace Veridox::Private
 	class BorderTypes
 	{
 	public:
-		static Border none;
-		static Border all;
-		static Border title;
+		static Border* none;
+		static Border* all;
+		static Border* title;
+
+	public:
+		static void Init();
+		static void Shutdown();
 
 	};
 }

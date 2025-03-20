@@ -91,7 +91,7 @@ namespace Veridox::Private
 
 		cell_reference ref(column_t(columnIndex++), 1);
 
-		m_worksheet.cell(ref).value(id);
+		Set(ref.column_index(), ref.row(), id, Styles::title);
 		m_worksheet.column_properties(ref.column()).width = width;
 
 		return ref.column_index();

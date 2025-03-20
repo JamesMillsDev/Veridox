@@ -42,6 +42,11 @@ namespace Veridox::Private
 	{
 		assert(m_workbook != nullptr && "Workbook shouldn't be nullptr!");
 
+		for (auto& [id, style] : m_cachedStyles)
+		{
+			delete style;
+		}
+
 		m_workbook->save(m_workbookName);
 
 		delete m_workbook;
